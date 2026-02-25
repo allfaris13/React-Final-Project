@@ -17,7 +17,9 @@ const ListTrending = () => {
         const fetchTrending = async () => {
             setLoading(true);
             try {
-                const res = await api.get("/trending/all/day"); 
+                const res = await api.get("/trending/all/day", {
+                    params: { language: "en-US" },
+                }); 
                 // Filter out 'person' type
                 setTrending(res.data.results.filter(item => item.media_type !== "person"));
             } catch (err) {

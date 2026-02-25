@@ -23,7 +23,7 @@ const ListNowPlaying = () => {
             try {
                 const res = await api.get("/movie/now_playing", {
                     // PENTING: Tambahkan filter konten dewasa (seperti di komponen list lainnya)
-                    params: { include_adult: false }, 
+                    params: { include_adult: false, language: "en-US" }, 
                 });
                 
                 // Filter hasil secara lokal sebagai lapisan keamanan tambahan

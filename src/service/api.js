@@ -4,6 +4,7 @@ import axios from "axios"; // Mengimpor axios untuk HTTP requests
   const api = axios.create({ // Membuat instance axios
     baseURL: "https://api.themoviedb.org/3", // URL base API TMDB
     headers: { // Header untuk autentikasi
+      accept: "application/json",
       Authorization: `Bearer ${import.meta.env.VITE_KEY_TMDB}`, // Token bearer dari environment variable
     },
   });

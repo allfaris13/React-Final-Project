@@ -27,6 +27,7 @@ const ListMovie = () => {
                     page, 
                     sort_by: sortBy,
                     include_adult: false, // Tambahkan filter konten dewasa
+                    language: "en-US",
                 },
             });
 
