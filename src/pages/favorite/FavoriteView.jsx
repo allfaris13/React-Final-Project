@@ -1,17 +1,16 @@
-// src/views/FavoriteView/FavoriteView.jsx
-
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
 import { useTheme } from "../../context/ThemeContext";
 import { removeFavorite } from "../../reducer/favoriteReducer";
-import FloatingThemeButton from "../../components/common/FloatingThemeButton"; // 💡 Import komponen tema baru
+import FloatingThemeButton from "../../components/common/FloatingThemeButton";
+import MovieCard from "../../components/common/MovieCard";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaTrash, FaBoxOpen } from "react-icons/fa";
 
-// 🔴 Hapus isMuted dan toggleSound dari props
 const FavoriteView = () => {
     const dispatch = useDispatch();
     const { films, series } = useSelector((state) => state.favorite);
-    const { theme } = useTheme(); 
+    const { theme } = useTheme();
 
     const [loading, setLoading] = useState(true);
 
@@ -22,113 +21,65 @@ const FavoriteView = () => {
 
     const handleRemove = (id, type) => {
         const typeText = type === "films" ? "movie" : "series";
-        const confirmDelete = window.confirm(`Yakin menghapus ${typeText} dari favorit?`);
-
-        if (confirmDelete) {
+        if (window.confirm(`Yakin menghapus ${typeText} ini dari favorit?`)) {
             dispatch(removeFavorite(id, type));
         }
     };
 
-    // Kelas tema
-    const bgPrimary = "bg-base-100"; 
+    const bgPrimary = "bg-base-100";
     const textPrimary = "text-base-content";
-    const textSecondary = theme === "dark" ? "text-gray-400" : "text-gray-600";
     const accentColor = "text-red-600";
 
-    // --- RENDER CARD FILM/SERIES (tetap sama) ---
-    const renderCard = (item, type) => {
-        const path = type === "film" ? `/film/${item.id}` : `/series/${item.id}`;
-        const title = item.original_title || item.title || item.name || item.original_name;
-        const rating = item.vote_average?.toFixed(1) || 'N/A';
-        const mediaLabel = type === "film" ? 'Film' : 'Series';
-
-        const imageUrl = item.poster_path
-            ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
-            : `https://via.placeholder.com/256x384?text=No+Image`;
-
-        return (
-            <div
-                key={`${type}-${item.id}`}
-                className="carousel-item w-64 relative rounded-lg overflow-hidden shadow-md transform transition duration-300
-                            group hover:scale-[1.03] hover:shadow-2xl hover:shadow-red-600/50"
-            >
-                {/* 🔴 TOMBOL HAPUS IKONIK */}
-                <button
-                    onClick={(e) => {
-                        e.preventDefault(); 
-                        handleRemove(item.id, type === "film" ? "films" : "series");
-                    }}
-                    className="absolute top-2 right-2 p-2 bg-red-700 hover:bg-red-800 text-white rounded-full z-20 
-                                opacity-0 group-hover:opacity-100 transition duration-300 shadow-lg"
-                    title="Hapus dari Favorit"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-
-
-                <Link
-                    to={path}
-                    className="block relative w-full h-full"
-                >
-                    {/* Image */}
-                    <img
-                        src={imageUrl}
-                        alt={title}
-                        className="w-full h-full object-cover rounded-lg aspect-[2/3]"
-                        onError={(e) => { e.target.src = `https://via.placeholder.com/256x384?text=No+Image`; }}
-                    />
-
-                    {/* Overlay Header */}
-                    <span className="absolute top-0 left-0 bg-red-600 text-xs px-2 py-1 rounded-br-lg z-10 text-white font-semibold">
-                        {mediaLabel}
-                    </span>
-
-                    {/* Overlay Interaktif Saat Hover */}
-                    <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 text-white">
-                        <h3 className="text-xl font-extrabold mb-1 line-clamp-2">{title}</h3>
-                        <p className="text-yellow-400 text-lg flex items-center mb-2">
-                            <span className="mr-1">⭐</span> {rating}
-                        </p>
-                        
-                        {/* Deskripsi/Overview */}
-                        <p className="text-sm text-gray-300 line-clamp-3 mb-3">
-                            {item.overview || "No overview available."}
-                        </p>
-                        
-                        <p className="text-xs text-gray-400">
-                            {item.release_date
-                                ? `Rilis: ${item.release_date}`
-                                : `Tayang Perdana: ${item.first_air_date}`}
-                        </p>
-                    </div>
-                </Link>
-            </div>
-        );
-    };
-
-    // --- RENDER SECTION (tetap sama) ---
     const renderSection = (items, title, type) => (
-        <div className="mb-12 relative">
-            <h3 className={`text-2xl font-bold mb-4 ${accentColor}`}>{title}</h3>
+        <div className="mb-16 relative">
+            <div className="flex items-center justify-between mb-8">
+                <h3 className={`text-2xl font-black ${textPrimary} flex items-center gap-3`}>
+                    <span className="w-2 h-8 bg-red-600 rounded-full"></span>
+                    {title}
+                    <span className="text-sm font-medium opacity-50 ml-2">({items.length} items)</span>
+                </h3>
+            </div>
 
             {items.length === 0 ? (
-                <p className={`${textSecondary}`}>Belum ada {type} favorit yang ditambahkan.</p>
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex flex-col items-center justify-center p-12 bg-base-200/50 rounded-3xl border-2 border-dashed border-base-300"
+                >
+                    <FaBoxOpen className="text-4xl opacity-20 mb-4" />
+                    <p className="opacity-40 font-medium">No items added to favorites yet.</p>
+                </motion.div>
             ) : (
                 <div className="relative">
-                    
-                    {/* Gradient kiri & kanan disesuaikan dengan tema */}
-                    <div
-                        className={`absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-base-100 to-transparent pointer-events-none z-10`}
-                    />
-                    <div
-                        className={`absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-base-100 to-transparent pointer-events-none z-10`}
-                    />
+                    <div className="overflow-x-auto scroll-smooth pb-8 px-4 scrollbar-hide">
+                        <div className="carousel w-full space-x-8 pb-4 pt-4">
+                            <AnimatePresence mode="popLayout">
+                                {items.map((item) => (
+                                    <motion.div
+                                        key={`${type}-${item.id}`}
+                                        layout
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.2 } }}
+                                        className="relative group"
+                                    >
+                                        <MovieCard item={item} type={type === "films" ? "movie" : "series"} />
 
-                    <div className="overflow-x-auto scroll-smooth pb-4 px-2">
-                        <div className="flex space-x-6 relative z-0">
-                            {items.map((item) => renderCard(item, type))}
+                                        {/* Premium Delete Button */}
+                                        <button
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                handleRemove(item.id, type);
+                                            }}
+                                            className="absolute -top-3 -right-3 p-3 bg-red-600 hover:bg-black text-white rounded-2xl z-40 
+                                                        opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-xl border-4 border-base-100 transform hover:scale-110"
+                                            title="Remove from Favorites"
+                                        >
+                                            <FaTrash className="text-xs" />
+                                        </button>
+                                    </motion.div>
+                                ))}
+                            </AnimatePresence>
                         </div>
                     </div>
                 </div>
@@ -140,28 +91,38 @@ const FavoriteView = () => {
         return (
             <div className={`flex justify-center items-center min-h-screen ${bgPrimary} ${textPrimary}`}>
                 <div className="flex flex-col items-center">
-                    <div className="w-10 h-10 border-4 border-t-transparent border-red-600 rounded-full animate-spin mb-3"></div>
-                    <p className="text-lg font-semibold">Memuat favoritmu...</p>
+                    <div className="w-16 h-16 border-4 border-red-600 border-t-transparent rounded-full animate-spin mb-6"></div>
+                    <p className="text-xl font-black tracking-widest uppercase opacity-50">Loading Collections</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className={`relative min-h-screen ${bgPrimary} ${textPrimary}`}>
-            
-            {/* DIV KONTEN */}
-            <div className="px-6 py-6">
-                <h1 className="text-4xl md:text-5xl font-extrabold mb-2 text-red-600">Favorit Saya</h1>
-                <h2 className={`text-lg md:text-xl font-medium mb-8 ${textPrimary}`}>
-                    Film & Series favoritmu tersimpan di sini.
-                </h2>
+        <div className={`relative min-h-screen ${bgPrimary} ${textPrimary} pt-12`}>
+            <div className="max-w-7xl mx-auto px-6">
+                <header className="mb-16">
+                    <motion.h1
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className="text-5xl md:text-7xl font-black mb-4 tracking-tighter"
+                    >
+                        My <span className="text-red-600">Favorites</span>
+                    </motion.h1>
+                    <motion.p
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.1 }}
+                        className="text-lg opacity-60 font-medium max-w-2xl"
+                    >
+                        Your curated list of must-watch movies and series. Everything you love, all in one place.
+                    </motion.p>
+                </header>
 
-                {renderSection(films, "🎬 Film Favorit", "film")}
-                {renderSection(series, "📺 Series Favorit", "series")}
+                {renderSection(films, "Movies", "films")}
+                {renderSection(series, "Series", "series")}
             </div>
 
-            {/* 🚀 PANGGIL TOMBOL TEMA BARU */}
             <FloatingThemeButton />
         </div>
     );

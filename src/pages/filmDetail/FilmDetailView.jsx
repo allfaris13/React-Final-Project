@@ -1,31 +1,25 @@
-// src/views/Detail/FilmDetailView.jsx
-
-import React from "react"; 
-import { useNavigate } from "react-router-dom"; 
-// Import sub-komponen (View Sections)
-import DeskripsiFilm from "../../components/Detail/DeskripsiFilm/DeskripsiFIlm";
-import SimiliarFilm from "../../components/Detail/SimilarFilm/SimiliarFilm";
-import Casting from "../../components/Detail/CastingFilm/Casting";
+import React from "react";
+import { useNavigate, Link } from "react-router-dom";
 import RatingReview from "../../components/Detail/RatingReview/RatingReview";
 import { useTheme } from "../../context/ThemeContext";
-import FloatingThemeButton from "../../components/common/FloatingThemeButton"; 
-// Import Icons
+import FloatingThemeButton from "../../components/common/FloatingThemeButton";
+import MovieCard from "../../components/common/MovieCard";
+import { motion } from "framer-motion";
 import { IoIosArrowBack } from "react-icons/io";
-import { FaStar, FaPlay, FaGlobe, FaClock } from "react-icons/fa"; 
+import { FaStar, FaPlay, FaGlobe, FaClock, FaHeart, FaCalendarAlt, FaTag, FaIndustry } from "react-icons/fa";
 
 const IMG_BASE = "https://image.tmdb.org/t/p/original";
 const POSTER_BASE = "https://image.tmdb.org/t/p/w500";
 
-const FilmDetailView = ({ film, trailerKey, handleFavorite }) => {
-    const { theme } = useTheme(); 
+const FilmDetailView = ({ film, trailerKey, cast, similar, theme, handleFavorite }) => {
     const navigate = useNavigate();
 
-    // Pengaturan kelas Tailwind berdasarkan tema
-    const themeClass = theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900";
-    const primaryBtnClass = "flex items-center justify-center gap-2 bg-red-700 hover:bg-red-800 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition duration-300 transform hover:scale-[1.02]";
-    const secondaryBtnClass = "flex items-center justify-center gap-2 bg-transparent border-2 border-red-700 hover:bg-red-700 hover:text-white text-red-700 font-bold py-3 px-6 rounded-lg shadow-lg transition duration-300";
-    
-    // Fungsi utilitas: Mengubah menit menjadi format jam dan menit
+    const themeClass = theme === "dark" ? "bg-gray-900 text-gray-100" : "bg-gray-100 text-gray-900";
+    const detailBgClass = theme === "dark" ? "bg-gray-800/50 backdrop-blur-md" : "bg-white shadow-xl";
+
+    const primaryBtnClass = "flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-2xl shadow-2xl transition-all duration-300 transform hover:scale-105 active:scale-95";
+    const secondaryBtnClass = "flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 text-white font-bold py-4 px-8 rounded-2xl shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95";
+
     const formatRuntime = (minutes) => {
         if (!minutes || minutes === 0) return 'N/A';
         const hours = Math.floor(minutes / 60);
@@ -34,138 +28,232 @@ const FilmDetailView = ({ film, trailerKey, handleFavorite }) => {
     };
 
     return (
-        <div className={`min-h-screen transition-colors duration-300 ${themeClass}`}>
-            
-            {/* 1. HERO SECTION & POSTER */}
-            {/* ... (kode HERO SECTION tidak berubah) ... */}
-            <div className="relative w-full h-auto pb-12">
-                
-                {/* Backdrop Image dengan Overlay Blur */}
-                <div 
-                    className="w-full h-[50vh] md:h-[65vh] bg-cover bg-center" 
+        <div className={`min-h-screen transition-colors duration-500 ${themeClass} overflow-x-hidden`}>
+
+            {/* 1. HERO SECTION */}
+            <div className="relative w-full h-[70vh] md:h-[85vh]">
+                <motion.div
+                    initial={{ scale: 1.1, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ duration: 0.8 }}
+                    className="absolute inset-0 bg-cover bg-center"
                     style={{ backgroundImage: `url(${IMG_BASE}${film.backdrop_path})` }}
                 >
-                    {/* Overlay gelap dan blur */}
-                    <div className="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
-                </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-black/60"></div>
+                </motion.div>
 
-                {/* Tombol Back */}
-                <div className="absolute top-4 left-4 z-30">
-                    <button 
-                        onClick={() => navigate(-1)} 
-                        className="bg-red-700 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow-md transition flex items-center gap-1 text-sm"
-                        title="Kembali ke halaman sebelumnya"
+                {/* Top Nav Overlay */}
+                <div className="absolute top-0 inset-x-0 p-6 flex justify-between items-center z-40">
+                    <motion.button
+                        whileHover={{ x: -5 }}
+                        onClick={() => navigate(-1)}
+                        className="bg-black/40 backdrop-blur-xl hover:bg-red-600 text-white px-6 py-3 rounded-2xl shadow-2xl transition-all flex items-center gap-2 text-sm font-bold border border-white/10"
                     >
-                        <IoIosArrowBack /> Back
-                    </button>
+                        <IoIosArrowBack className="text-xl" /> Back
+                    </motion.button>
+
+                    <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={handleFavorite}
+                        className="bg-white/10 backdrop-blur-xl border border-white/20 p-4 rounded-2xl text-red-500 hover:bg-red-600 hover:text-white transition-all shadow-2xl"
+                    >
+                        <FaHeart className="text-xl" />
+                    </motion.button>
                 </div>
 
-                {/* Konten Detail Utama */}
-                <div className="absolute top-[25vh] md:top-[35vh] left-0 right-0 px-4 md:px-10 z-20">
-                    <div className="flex flex-col md:flex-row gap-8">
-                        
-                        {/* Poster Film */}
-                        <div className="w-56 h-auto flex-shrink-0 mx-auto md:mx-0 -mt-16 md:-mt-24">
+                {/* Hero Content */}
+                <div className="absolute inset-x-0 bottom-0 px-6 md:px-16 pb-16 z-20">
+                    <div className="flex flex-col md:flex-row gap-12 items-end">
+                        <motion.div
+                            initial={{ y: 50, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 0.2 }}
+                            className="hidden md:block w-72 flex-shrink-0"
+                        >
                             <img
                                 src={film.poster_path ? `${POSTER_BASE}${film.poster_path}` : "https://via.placeholder.com/500x750?text=No+Poster"}
                                 alt={film.title}
-                                className="w-full h-auto rounded-xl shadow-2xl border-4 border-white/10"
+                                className="w-full rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-4 border-white/10 transform rotate-1"
                             />
-                        </div>
+                        </motion.div>
 
-                        {/* Detail Ringkas */}
-                        <div className="text-center md:text-left mt-4 md:mt-0 pt-0 bottom-10 md:pt-10 ">
-                            <h1 className="text-4xl md:text-5xl font-extrabold text-white drop-shadow-xl">{film.title}</h1>
-                            
+                        <div className="flex-1">
                             {film.tagline && (
-                                <p className="text-xl italic text-gray-300 mt-1 mb-3">{film.tagline}</p>
+                                <motion.p
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 0.8 }}
+                                    className="text-red-500 font-black tracking-[0.3em] uppercase text-xs mb-4 drop-shadow-lg"
+                                >
+                                    {film.tagline}
+                                </motion.p>
                             )}
-                            
-                            {/* Metadata Ringkas */}
-                            <div className="flex items-center justify-center md:justify-start gap-4 mt-2 text-white flex-wrap">
-                                <span className="flex items-center text-lg font-semibold">
-                                    <FaStar className="text-yellow-400 mr-1" /> {film.vote_average?.toFixed(1)}
+                            <motion.h1
+                                initial={{ y: 20, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                transition={{ delay: 0.3 }}
+                                className="text-5xl md:text-8xl font-black text-white mb-6 tracking-tighter drop-shadow-2xl"
+                            >
+                                {film.title}
+                            </motion.h1>
+
+                            <motion.div
+                                initial={{ y: 20, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                transition={{ delay: 0.4 }}
+                                className="flex flex-wrap items-center gap-6 text-white mb-8"
+                            >
+                                <span className="flex items-center gap-2 bg-yellow-500/20 backdrop-blur-md px-4 py-2 rounded-full border border-yellow-500/30 text-yellow-400 font-bold">
+                                    <FaStar /> {film.vote_average?.toFixed(1)}
                                 </span>
-                                <span className="text-lg font-semibold">
-                                    | {film.release_date ? new Date(film.release_date).getFullYear() : 'N/A'}
+                                <span className="bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 font-bold">
+                                    {film.release_date ? new Date(film.release_date).getFullYear() : 'TBA'}
                                 </span>
-                                <span className="flex items-center text-lg font-semibold">
-                                    | <FaClock className="text-red-500 ml-2 mr-1" /> {formatRuntime(film.runtime)}
+                                <span className="flex items-center gap-2 bg-blue-500/20 backdrop-blur-md px-4 py-2 rounded-full border border-blue-500/30 text-blue-400 font-bold">
+                                    <FaClock /> {formatRuntime(film.runtime)}
                                 </span>
-                            </div>
-                            
-                            {/* Aksi Tombol Trailer/Homepage */}
-                            <div className="flex justify-center md:justify-start gap-4 mt-6">
-                                {/* Tombol Watch Trailer */}
+                                <span className="bg-red-600/20 backdrop-blur-md px-4 py-2 rounded-full border border-red-600/30 text-red-400 font-bold uppercase tracking-widest text-xs">
+                                    Movie
+                                </span>
+                            </motion.div>
+
+                            <motion.div
+                                initial={{ y: 20, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                transition={{ delay: 0.5 }}
+                                className="flex flex-wrap gap-4"
+                            >
                                 {trailerKey ? (
-                                    <a 
-                                        href={`https://www.youtube.com/watch?v=${trailerKey}`} 
-                                        target="_blank" 
-                                        rel="noopener noreferrer" 
-                                        className={primaryBtnClass}
-                                    >
+                                    <a href={`https://www.youtube.com/watch?v=${trailerKey}`} target="_blank" rel="noopener noreferrer" className={primaryBtnClass}>
                                         <FaPlay /> Watch Trailer
                                     </a>
                                 ) : (
-                                    <button disabled className={`${primaryBtnClass} opacity-50 cursor-not-allowed`}>
-                                        Trailer N/A
-                                    </button>
+                                    <button disabled className={`${primaryBtnClass} opacity-50`}>Trailer Unavailable</button>
                                 )}
-                                {/* Tombol Website (Jika ada) */}
                                 {film.homepage && (
-                                    <a 
-                                        href={film.homepage} 
-                                        target="_blank" 
-                                        rel="noreferrer" 
-                                        className={secondaryBtnClass}
-                                    >
+                                    <a href={film.homepage} target="_blank" rel="noreferrer" className={secondaryBtnClass}>
                                         <FaGlobe /> Website
                                     </a>
                                 )}
-                            </div>
+                            </motion.div>
                         </div>
-
                     </div>
                 </div>
             </div>
 
-            {/* Konten Detail Lainnya */}
-            <div className="container mx-auto px-4 md:px-10 -mt-10 md:mt-0 pb-12">
-                
-                {/* 🔴 1. AUDIO PLAYER DITEMPATKAN DI SINI */}
-                <div className="my-10 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-                    <h3 className="text-2xl font-bold mb-4 text-red-700 dark:text-red-500">
-                        🎵 Soundtrack Film (AI Generated)
-                    </h3>
-                    
-                    <audio 
-                        controls 
-                        className="w-full" // Membuat player mengambil lebar penuh container
-                    >
-                        <source 
-                            // 🔑 GANTI 'URL_SOUNDTRACK_ANDA' dengan tautan file MP3/M4A 
-                            // yang Anda dapatkan dari Sunoai atau Google Drive (Langkah 4).
-                            src="/theConjuring.mp3" 
-                            type="audio/mpeg" // Ganti type jika format file Anda berbeda (misalnya: 'audio/wav')
-                        />
-                        Browser Anda tidak mendukung elemen audio.
-                    </audio>
+            {/* 2. MAIN CONTENT AREA */}
+            <div className="max-w-7xl mx-auto px-6 -mt-8 relative z-30 pb-24">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+
+                    {/* Left Column (Overview & Cast) */}
+                    <div className="lg:col-span-2 space-y-12">
+                        <section className={`p-8 md:p-12 rounded-[2.5rem] ${detailBgClass}`}>
+                            <h2 className="text-3xl font-black mb-6 flex items-center gap-3">
+                                <span className="w-2 h-8 bg-red-600 rounded-full"></span>
+                                Synopsis
+                            </h2>
+                            <p className="text-lg md:text-xl leading-relaxed opacity-80 font-medium">
+                                {film.overview || "No overview available for this film."}
+                            </p>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 pt-12 border-t border-white/5">
+                                <div className="space-y-4">
+                                    <p className="flex items-center gap-4 text-sm font-bold opacity-60 uppercase tracking-widest"><FaCalendarAlt className="text-red-600" /> Release Date</p>
+                                    <p className="text-lg font-black">{film.release_date || 'TBA'}</p>
+                                </div>
+                                <div className="space-y-4">
+                                    <p className="flex items-center gap-4 text-sm font-bold opacity-60 uppercase tracking-widest"><FaTag className="text-red-600" /> Status</p>
+                                    <p className="text-lg font-black">{film.status}</p>
+                                </div>
+                                <div className="space-y-4">
+                                    <p className="flex items-center gap-4 text-sm font-bold opacity-60 uppercase tracking-widest"><FaGlobe className="text-red-600" /> Language</p>
+                                    <p className="text-lg font-black">{film.original_language?.toUpperCase()}</p>
+                                </div>
+                                <div className="space-y-4">
+                                    <p className="flex items-center gap-4 text-sm font-bold opacity-60 uppercase tracking-widest"><FaIndustry className="text-red-600" /> Production</p>
+                                    <p className="text-lg font-black truncate">{film.production_companies?.[0]?.name || 'N/A'}</p>
+                                </div>
+                            </div>
+                        </section>
+
+                        {/* Soundtrack Section */}
+                        <section className={`p-8 md:p-12 rounded-[2.5rem] ${detailBgClass} border-l-8 border-red-600`}>
+                            <h3 className="text-2xl font-black mb-6 flex items-center gap-3">
+                                <span className="text-red-600 animate-pulse">🎵</span> Soundtrack (AI Generated)
+                            </h3>
+                            <audio controls className="w-full opacity-80">
+                                <source src="/theConjuring.mp3" type="audio/mpeg" />
+                                Browser anda tidak mendukung elemen audio.
+                            </audio>
+                        </section>
+
+                        {/* Casting */}
+                        {cast.length > 0 && (
+                            <section>
+                                <h2 className="text-3xl font-black mb-8 flex items-center gap-3">
+                                    <span className="w-2 h-8 bg-red-600 rounded-full"></span>
+                                    The Cast
+                                </h2>
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+                                    {cast.slice(0, 8).map(c => (
+                                        <div key={c.id} className={`p-4 rounded-3xl ${detailBgClass} transition-all hover:bg-black hover:text-white group`}>
+                                            <img
+                                                src={c.profile_path ? `${POSTER_BASE}${c.profile_path}` : "https://via.placeholder.com/200x300?text=No+Image"}
+                                                alt={c.original_name}
+                                                className="w-full h-40 object-cover rounded-2xl mb-4 grayscale group-hover:grayscale-0 transition-all duration-500"
+                                            />
+                                            <h4 className="font-bold text-sm truncate">{c.original_name}</h4>
+                                            <p className="text-[10px] opacity-50 truncate">{c.character}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </section>
+                        )}
+                    </div>
+
+                    {/* Right Column (Sidebar) */}
+                    <div className="space-y-12">
+                        {/* Rating Section */}
+                        <section className={`p-8 rounded-[2.5rem] ${detailBgClass}`}>
+                            <RatingReview filmId={film.id} theme={theme} />
+                        </section>
+
+                        {/* Similar Recommendations */}
+                        {similar.length > 0 && (
+                            <section>
+                                <h2 className="text-2xl font-black mb-6">Recommendations</h2>
+                                <div className="space-y-6">
+                                    {similar.slice(0, 5).map(s => (
+                                        <Link
+                                            key={s.id}
+                                            to={`/film/${s.id}`}
+                                            className="flex gap-4 group"
+                                        >
+                                            <div className="w-24 h-36 flex-shrink-0 rounded-2xl overflow-hidden shadow-lg">
+                                                <img
+                                                    src={s.poster_path ? `${POSTER_BASE}${s.poster_path}` : "https://via.placeholder.com/200x300?text=No+Poster"}
+                                                    alt={s.title}
+                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                                                />
+                                            </div>
+                                            <div className="flex flex-col justify-center">
+                                                <h4 className="font-black group-hover:text-red-600 transition-colors leading-tight mb-2">{s.title}</h4>
+                                                <div className="flex items-center gap-2 text-xs font-bold opacity-50">
+                                                    <FaStar className="text-yellow-500" />
+                                                    {s.vote_average?.toFixed(1)}
+                                                    <span>•</span>
+                                                    {s.release_date ? new Date(s.release_date).getFullYear() : 'TBA'}
+                                                </div>
+                                            </div>
+                                        </Link>
+                                    ))}
+                                </div>
+                            </section>
+                        )}
+                    </div>
                 </div>
-                
-                {/* 2. Deskripsi Film */}
-                <DeskripsiFilm film={film} trailerKey={trailerKey} theme={theme} handleFavorite={handleFavorite} /> 
-
-                {/* 3. Casting */}
-                <Casting filmId={film.id} theme={theme} /> 
-
-                {/* 4. Similar Film */}
-                <SimiliarFilm filmId={film.id} theme={theme} /> 
-
-                {/* 5. Rating & Review Section */}
-                <RatingReview filmId={film.id} theme={theme} />
             </div>
 
-            {/* 🚀 PANGGIL TOMBOL TEMA BARU */}
             <FloatingThemeButton />
         </div>
     );

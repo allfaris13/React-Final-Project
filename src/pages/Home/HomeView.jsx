@@ -1,9 +1,8 @@
-// src/views/Home/HomeView.jsx
-
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FaVolumeUp, FaVolumeMute, FaMoon, FaSun } from "react-icons/fa";
+import { FaVolumeUp, FaVolumeMute, FaMoon, FaSun, FaPlay, FaInfoCircle } from "react-icons/fa";
 import { useTheme } from "../../context/ThemeContext";
+import { motion, AnimatePresence } from "framer-motion";
 
 import ListMovie from "../../components/List/listMovie/ListMovie";
 import ListSeries from "../../components/List/listSeries/ListSeries";
@@ -14,16 +13,12 @@ const HomeView = ({
   trendingMovie,
   trailerKey,
   loading,
-  isMuted, // dari App.jsx
-  toggleSound, // dari App.jsx
+  isMuted,
+  toggleSound,
 }) => {
   const { theme, toggleTheme } = useTheme();
-
-  const ACCENT_COLOR = "text-red-600";
-  const BUTTON_COLOR = "bg-red-700 hover:bg-red-600";
   const IMG_BASE_URL = "https://image.tmdb.org/t/p/original";
 
-  // 🚀 Pastikan iframe sinkron dengan state isMuted di App.jsx
   useEffect(() => {
     const iframe = document.getElementById("ytPlayer");
     if (!iframe) return;
@@ -41,126 +36,132 @@ const HomeView = ({
 
   if (loading)
     return (
-      <p className="mt-20 text-center text-xl font-semibold text-base-content bg-base-100 min-h-screen">
-        ⏳ Memuat data sinema...
-      </p>
+      <div className="flex flex-col justify-center items-center h-screen bg-base-100">
+        <div className="w-16 h-16 border-4 border-red-600 border-t-transparent rounded-full animate-spin mb-6"></div>
+        <p className="text-xl font-black tracking-widest uppercase opacity-40 animate-pulse">Initializing Cinema</p>
+      </div>
     );
 
   return (
-    <div className="min-h-screen bg-base-100 text-base-content">
-      {/* 🎬 HERO SECTION */}
-      <div
-        className={`relative w-full ${
-          trailerKey ? "h-screen md:h-[90vh]" : "h-[60vh] md:h-[80vh]"
-        } overflow-hidden`}
-      >
-        {trailerKey ? (
-          <iframe
-            id="ytPlayer"
-            className="absolute top-0 left-0 w-full h-full"
-            // ⚠️ enablejsapi=1 wajib untuk kontrol mute/unmute via JS
-            src={`https://www.youtube.com/embed/${trailerKey}?autoplay=1&mute=1&loop=1&playlist=${trailerKey}&controls=0&modestbranding=1&showinfo=0&rel=0&iv_load_policy=3&enablejsapi=1`}
-            title="YouTube video player"
-            frameBorder="0"
-            allow="autoplay; fullscreen; encrypted-media"
-            allowFullScreen
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              transform: "scale(1.3)",
-            }}
-          />
-        ) : (
-          <div
-            className="w-full h-full bg-cover bg-center"
-            style={{
-              backgroundImage: `url(${IMG_BASE_URL}${trendingMovie?.backdrop_path})`,
-            }}
-          />
-        )}
-
-        {/* Lapisan gradient dan bayangan bawah */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/20 to-transparent"></div>
-        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-base-100/95 to-transparent z-10"></div>
-
-        {/* Overlay Konten */}
-        <div className="absolute left-0 bottom-0 top-1/3 md:top-1/2 flex flex-col justify-end px-6 md:px-12 pb-12 z-20 w-full">
-          <p
-            className={`text-sm md:text-lg font-bold ${ACCENT_COLOR} uppercase mb-1 drop-shadow-md`}
+    <div className="min-h-screen bg-base-100 text-base-content overflow-x-hidden">
+      {/* 🎬 HERO SECTION - PREMIUM OVERHAUL */}
+      <section className="relative h-[85vh] md:h-screen w-full overflow-hidden">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={trailerKey || 'backdrop'}
+            initial={{ opacity: 0, scale: 1.1 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1 }}
+            className="absolute inset-0 z-0"
           >
-            #TRENDING HARI INI
-          </p>
-          <h2 className="text-4xl md:text-7xl font-extrabold text-white mb-4 drop-shadow-xl max-w-4xl">
-            {trendingMovie?.title}
-          </h2>
-          <p className="text-sm md:text-xl text-gray-300 max-w-3xl mb-8 line-clamp-3 drop-shadow-md">
-            {trendingMovie?.overview}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Link
-              to={`/film/${trendingMovie?.id}`}
-              className={`${BUTTON_COLOR} text-white font-bold text-lg px-8 py-3 rounded-full flex items-center justify-center gap-2 transition duration-300 transform hover:scale-[1.02] shadow-lg`}
-            >
-              ▶ Tonton Sekarang
-            </Link>
-          </div>
+            {trailerKey ? (
+              <div className="relative w-full h-full scale-110">
+                <iframe
+                  id="ytPlayer"
+                  className="absolute inset-0 w-full h-full pointer-events-none"
+                  src={`https://www.youtube.com/embed/${trailerKey}?autoplay=1&mute=1&loop=1&playlist=${trailerKey}&controls=0&modestbranding=1&showinfo=0&rel=0&iv_load_policy=3&enablejsapi=1&origin=${window.location.origin}`}
+                  title="Hero Trailer"
+                  allow="autoplay; encrypted-media"
+                />
+                <div className="absolute inset-0 bg-black/40"></div>
+              </div>
+            ) : (
+              <div
+                className="w-full h-full bg-cover bg-center"
+                style={{ backgroundImage: `url(${IMG_BASE_URL}${trendingMovie?.backdrop_path})` }}
+              />
+            )}
+
+            {/* Gradients for depth */}
+            <div className="absolute inset-0 bg-gradient-to-r from-base-100 via-base-100/30 to-transparent"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-base-100 via-transparent to-black/30"></div>
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Hero Overlay Content */}
+        <div className="absolute inset-0 z-10 flex flex-col justify-center px-6 md:px-20 max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+            className="max-w-3xl"
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <span className="bg-red-600 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">
+                #Trending Today
+              </span>
+              <span className="bg-white/10 backdrop-blur-md text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest border border-white/10">
+                ⭐ {trendingMovie?.vote_average?.toFixed(1)}
+              </span>
+            </div>
+
+            <h1 className="text-6xl md:text-8xl font-black text-white mb-6 leading-tight tracking-tighter drop-shadow-2xl">
+              {trendingMovie?.title}
+            </h1>
+
+            <p className="text-lg md:text-xl text-gray-300 mb-10 line-clamp-3 font-medium drop-shadow-lg leading-relaxed max-w-2xl">
+              {trendingMovie?.overview}
+            </p>
+
+            <div className="flex flex-wrap gap-5">
+              <Link
+                to={`/film/${trendingMovie?.id}`}
+                className="bg-red-600 hover:bg-white hover:text-red-600 text-white font-black text-lg px-10 py-4 rounded-2xl flex items-center justify-center gap-3 transition-all duration-300 shadow-[0_20px_40px_rgba(220,38,38,0.3)] transform hover:-translate-y-1 active:scale-95"
+              >
+                <FaPlay className="text-sm" /> Watch Now
+              </Link>
+              <Link
+                to={`/film/${trendingMovie?.id}`}
+                className="bg-white/10 backdrop-blur-xl border border-white/20 hover:bg-white/20 text-white font-black text-lg px-10 py-4 rounded-2xl flex items-center justify-center gap-3 transition-all duration-300 shadow-xl transform hover:-translate-y-1 active:scale-95"
+              >
+                <FaInfoCircle className="text-sm" /> Details
+              </Link>
+            </div>
+          </motion.div>
         </div>
+
+        {/* Bottom scroll hint or accent */}
+        <div className="absolute bottom-0 w-full h-32 bg-gradient-to-t from-base-100 to-transparent z-20"></div>
+      </section>
+
+      {/* 🎞️ LIST SECTIONS - CLEANER LAYOUT */}
+      <div className="relative z-30 -mt-24 md:-mt-40 space-y-24 pb-32">
+        <ListTrending />
+        <ListNowPlaying />
+        <ListMovie />
+        <ListSeries />
       </div>
 
-      {/* 🎞️ DAFTAR FILM */}
-      <div className="relative -mt-20 md:-mt-32 z-30 px-0 md:px-6 space-y-12 pb-12 top-50">
-        <div className="py-2">
-          <ListTrending />
-        </div>
-        <div className="py-2">
-          <ListNowPlaying />
-        </div>
-        <div className="py-2">
-          <ListMovie />
-        </div>
-        <div className="py-2">
-          <ListSeries />
-        </div>
-      </div>
-
-      {/* 🎛️ FLOATING BUTTONS */}
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
-        {/* Tombol Mute/Unmute */}
-        <button
+      {/* 🎛️ PREMIUM FLOATING CONTROLS */}
+      <div className="fixed bottom-8 right-8 z-50 flex flex-col gap-4">
+        {/* Sound Toggle */}
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
           onClick={toggleSound}
-          className="p-3 rounded-full text-white shadow-lg bg-red-600 hover:bg-red-700 transition duration-200"
-          title={isMuted ? "Aktifkan Suara" : "Matikan Suara"}
+          className="p-5 rounded-2xl text-white shadow-2xl bg-red-600 border border-white/20 transition-all duration-300 transform hover:shadow-red-600/40"
+          title={isMuted ? "Unmute" : "Mute"}
         >
-          {isMuted ? (
-            <FaVolumeMute className="text-xl" />
-          ) : (
-            <FaVolumeUp className="text-xl" />
-          )}
-        </button>
+          {isMuted ? <FaVolumeMute className="text-xl" /> : <FaVolumeUp className="text-xl" />}
+        </motion.button>
 
-        {/* Tombol Dark/Light Theme */}
-        <button
+        {/* Theme Toggle */}
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
           onClick={toggleTheme}
-          className={`p-3 rounded-full text-white shadow-lg transition duration-200 ${
-            theme === "dark"
-              ? "bg-gray-800 hover:bg-gray-700"
-              : "bg-yellow-500 hover:bg-yellow-600"
-          }`}
-          title={
-            theme === "dark" ? "Ubah ke Light Theme" : "Ubah ke Dark Theme"
-          }
+          className={`p-5 rounded-2xl text-white shadow-2xl border transition-all duration-300 ${theme === "dark"
+              ? "bg-gray-800 border-gray-700 hover:bg-gray-700 shadow-black/40"
+              : "bg-yellow-500 border-yellow-400 hover:bg-yellow-600 shadow-yellow-500/20 text-gray-900"
+            }`}
+          title={theme === "dark" ? "Light Mode" : "Dark Mode"}
         >
-          {theme === "dark" ? (
-            <FaSun className="text-xl text-yellow-300" />
-          ) : (
-            <FaMoon className="text-xl text-gray-800" />
-          )}
-        </button>
+          {theme === "dark" ? <FaSun className="text-xl" /> : <FaMoon className="text-xl" />}
+        </motion.button>
       </div>
     </div>
   );
 };
 
 export default HomeView;
-
