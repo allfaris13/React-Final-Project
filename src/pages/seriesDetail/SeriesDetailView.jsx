@@ -17,14 +17,14 @@ const SeriesDetailView = ({ series, trailerKey, cast, similar, theme, handleFavo
     const detailBgClass = theme === "dark" ? "bg-gray-800/50 backdrop-blur-md" : "bg-white shadow-xl";
     const cardBgClass = theme === "dark" ? "bg-gray-700" : "bg-gray-200";
 
-    const primaryBtnClass = "flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-2xl shadow-2xl transition-all duration-300 transform hover:scale-105 active:scale-95";
-    const secondaryBtnClass = "flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 text-white font-bold py-4 px-8 rounded-2xl shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95";
+    const primaryBtnClass = "flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 md:py-4 md:px-8 rounded-2xl shadow-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 text-sm md:text-base";
+    const secondaryBtnClass = "flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 text-white font-bold py-3 px-6 md:py-4 md:px-8 rounded-2xl shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95 text-sm md:text-base";
 
     return (
         <div className={`min-h-screen transition-colors duration-500 ${themeClass} overflow-x-hidden`}>
 
-            {/* 1. HERO SECTION */}
-            <div className="relative w-full h-[70vh] md:h-[85vh]">
+            {/* 1. HERO SECTION - FULL SCREEN CINEMATIC */}
+            <div className="relative w-full h-screen">
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -41,7 +41,7 @@ const SeriesDetailView = ({ series, trailerKey, cast, similar, theme, handleFavo
                     {trailerKey && (
                         <div className="absolute inset-0 pointer-events-none">
                             <iframe
-                                className="absolute top-1/2 left-1/2 w-[115%] h-[115%] -translate-x-1/2 -translate-y-1/2 object-cover scale-[1.8] sm:scale-[1.35]"
+                                className="absolute top-1/2 left-1/2 w-[115%] h-[115%] -translate-x-1/2 -translate-y-1/2 object-cover scale-[3.8] sm:scale-[1.35]"
                                 src={`https://www.youtube.com/embed/${trailerKey}?autoplay=1&mute=1&loop=1&playlist=${trailerKey}&controls=0&modestbranding=1&showinfo=0&rel=0&iv_load_policy=3&enablejsapi=1&playsinline=1&origin=${window.location.origin}`}
                                 title="Background Trailer"
                                 allow="autoplay; encrypted-media"
@@ -54,23 +54,23 @@ const SeriesDetailView = ({ series, trailerKey, cast, similar, theme, handleFavo
                     <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-transparent to-black/10"></div>
                 </motion.div>
 
-                {/* Top Nav Overlay */}
-                <div className="absolute top-0 inset-x-0 p-6 flex justify-between items-center z-40">
+                {/* Top Nav Overlay - Snapped exactly below the floating navbar - Compact Version */}
+                <div className="absolute top-20 inset-x-0 p-4 md:p-6 flex justify-between items-center z-40">
                     <motion.button
                         whileHover={{ x: -5 }}
                         onClick={() => navigate(-1)}
-                        className="bg-black/40 backdrop-blur-xl hover:bg-red-600 text-white px-6 py-3 rounded-2xl shadow-2xl transition-all flex items-center gap-2 text-sm font-bold border border-white/10"
+                        className="bg-black/20 backdrop-blur-md hover:bg-red-600/80 text-white px-3 py-1.5 md:px-6 md:py-3 rounded-lg md:rounded-2xl shadow-2xl transition-all flex items-center gap-1.5 md:gap-2 text-[10px] md:text-sm font-bold border border-white/10"
                     >
-                        <IoIosArrowBack className="text-xl" /> Back
+                        <IoIosArrowBack className="text-base md:text-xl" /> Back
                     </motion.button>
 
                     <motion.button
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                         onClick={handleFavorite}
-                        className={`backdrop-blur-xl border border-white/20 p-4 rounded-2xl transition-all shadow-2xl ${isFavorite ? 'bg-red-600 text-white border-red-500' : 'bg-white/10 text-white hover:bg-red-600'}`}
+                        className={`backdrop-blur-md border border-white/20 p-2.5 md:p-4 rounded-lg md:rounded-2xl transition-all shadow-2xl ${isFavorite ? 'bg-red-600/70 text-white border-red-500/50' : 'bg-black/20 text-white hover:bg-red-600/80'}`}
                     >
-                        <FaHeart className="text-xl" />
+                        <FaHeart className="text-base md:text-xl" />
                     </motion.button>
                 </div>
 
@@ -95,7 +95,7 @@ const SeriesDetailView = ({ series, trailerKey, cast, similar, theme, handleFavo
                                 initial={{ y: 20, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
                                 transition={{ delay: 0.3 }}
-                                className="text-5xl md:text-8xl font-black text-white mb-6 tracking-tighter drop-shadow-2xl"
+                                className="text-3xl md:text-8xl font-black text-white mb-4 md:mb-6 tracking-tighter drop-shadow-2xl"
                             >
                                 {series.name}
                             </motion.h1>
@@ -104,15 +104,15 @@ const SeriesDetailView = ({ series, trailerKey, cast, similar, theme, handleFavo
                                 initial={{ y: 20, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
                                 transition={{ delay: 0.4 }}
-                                className="flex flex-wrap items-center gap-6 text-white mb-8"
+                                className="flex flex-wrap items-center gap-3 md:gap-6 text-white mb-6 md:mb-8"
                             >
-                                <span className="flex items-center gap-2 bg-yellow-500/20 backdrop-blur-md px-4 py-2 rounded-full border border-yellow-500/30 text-yellow-400 font-bold">
+                                <span className="flex items-center gap-1.5 md:gap-2 bg-yellow-500/20 backdrop-blur-md px-3 py-1.5 md:px-4 md:py-2 rounded-full border border-yellow-500/30 text-yellow-400 font-bold text-xs md:text-base">
                                     <FaStar /> {series.vote_average?.toFixed(1)}
                                 </span>
-                                <span className="bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 font-bold">
+                                <span className="bg-white/10 backdrop-blur-md px-3 py-1.5 md:px-4 md:py-2 rounded-full border border-white/10 font-bold text-xs md:text-base">
                                     {series.first_air_date ? new Date(series.first_air_date).getFullYear() : 'TBA'}
                                 </span>
-                                <span className="bg-red-600/20 backdrop-blur-md px-4 py-2 rounded-full border border-red-600/30 text-red-400 font-bold uppercase tracking-widest text-xs">
+                                <span className="bg-red-600/20 backdrop-blur-md px-3 py-1.5 md:px-4 md:py-2 rounded-full border border-red-600/30 text-red-400 font-bold uppercase tracking-widest text-[10px] md:text-xs">
                                     TV Series
                                 </span>
                             </motion.div>

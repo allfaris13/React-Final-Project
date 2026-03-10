@@ -44,8 +44,8 @@ const HomeView = ({
 
   return (
     <div className="min-h-screen bg-base-100 text-base-content overflow-x-hidden">
-      {/* 🎬 HERO SECTION - RESPONSIVE OPTIMIZATION */}
-      <section className="relative h-[70vh] sm:h-[85vh] md:h-screen w-full overflow-hidden">
+      {/* 🎬 HERO SECTION - FULL SCREEN CINEMATIC VIDEO */}
+      <section className="relative h-screen w-full overflow-hidden">
         <AnimatePresence mode="wait">
           <motion.div
             key={trailerKey || 'backdrop'}
@@ -56,7 +56,7 @@ const HomeView = ({
             className="absolute inset-0 z-0"
           >
             {trailerKey ? (
-              <div className="relative w-full h-full scale-[1.8] sm:scale-[1.2] md:scale-110">
+              <div className="relative w-full h-full scale-[3.8] sm:scale-[1.2] md:scale-110">
                 <iframe
                   id="ytPlayer"
                   className="absolute inset-0 w-full h-full pointer-events-none object-cover"
@@ -79,45 +79,45 @@ const HomeView = ({
           </motion.div>
         </AnimatePresence>
 
-        {/* Hero Overlay Content */}
-        <div className="absolute inset-0 z-10 flex flex-col justify-start pt-24 sm:pt-32 md:justify-center md:pt-0 px-4 sm:px-10 md:px-20 max-w-7xl mx-auto">
+        {/* Hero Overlay Content - More compact on mobile */}
+        <div className="absolute inset-0 z-10 flex flex-col justify-end pb-24 md:justify-center md:pb-0 px-4 sm:px-10 md:px-20 max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.8 }}
             className="max-w-2xl sm:mt-0"
           >
-            <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-              <span className="bg-red-600 text-white text-[9px] sm:text-[10px] font-black px-2 sm:px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">
+            <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-6">
+              <span className="bg-red-600 text-white text-[8px] sm:text-[10px] font-black px-2 sm:px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">
                 #Trending Now
               </span>
-              <span className="bg-white/10 backdrop-blur-md text-white text-[9px] sm:text-[10px] font-black px-2 sm:px-3 py-1 rounded-full uppercase tracking-widest border border-white/10">
+              <span className="bg-white/10 backdrop-blur-md text-white text-[8px] sm:text-[10px] font-black px-2 sm:px-3 py-1 rounded-full uppercase tracking-widest border border-white/10">
                 ⭐ {trendingMovie?.vote_average?.toFixed(1)}
               </span>
             </div>
 
-            <h1 className="text-4xl sm:text-6xl md:text-8xl font-black text-white mb-4 sm:mb-6 leading-tight tracking-tighter drop-shadow-2xl line-clamp-2">
+            <h1 className="text-3xl sm:text-6xl md:text-8xl font-black text-white mb-2 sm:mb-6 leading-tight tracking-tighter drop-shadow-2xl line-clamp-2">
               {trendingMovie?.title}
             </h1>
 
-            <p className="text-sm sm:text-lg md:text-xl text-gray-300 mb-6 sm:mb-10 line-clamp-3 font-medium drop-shadow-lg leading-relaxed max-w-xl opacity-90">
+            <p className="text-xs sm:text-lg md:text-xl text-gray-300 mb-4 sm:mb-10 line-clamp-2 font-medium drop-shadow-lg leading-relaxed max-w-xl opacity-90">
               {trendingMovie?.overview}
             </p>
 
-            <div className="flex flex-wrap gap-3 sm:gap-5">
+            <div className="flex flex-wrap gap-2 sm:gap-5">
               <a
                 href={trailerKey ? `https://www.youtube.com/watch?v=${trailerKey}` : `https://www.youtube.com/results?search_query=${encodeURIComponent(trendingMovie?.title || trendingMovie?.name)} trailer`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-red-600 hover:bg-white hover:text-red-600 text-white font-black text-sm sm:text-lg px-6 py-3 sm:px-10 sm:py-4 rounded-xl sm:rounded-2xl flex items-center justify-center gap-2 sm:gap-3 transition-all duration-300 shadow-xl transform active:scale-95"
+                className="bg-red-600 hover:bg-white hover:text-red-600 text-white font-black text-xs sm:text-lg px-4 py-2.5 sm:px-10 sm:py-4 rounded-xl sm:rounded-2xl flex items-center justify-center gap-2 sm:gap-3 transition-all duration-300 shadow-xl transform active:scale-95"
               >
-                <FaPlay className="text-[10px] sm:text-sm" /> Watch Now
+                <FaPlay className="text-[8px] sm:text-sm" /> Watch Now
               </a>
               <Link
                 to={`/film/${trendingMovie?.id}`}
-                className="bg-white/10 backdrop-blur-xl border border-white/20 hover:bg-white/20 text-white font-black text-sm sm:text-lg px-6 py-3 sm:px-10 sm:py-4 rounded-xl sm:rounded-2xl flex items-center justify-center gap-2 sm:gap-3 transition-all duration-300 transform active:scale-95"
+                className="bg-white/10 backdrop-blur-xl border border-white/20 hover:bg-white/20 text-white font-black text-xs sm:text-lg px-4 py-2.5 sm:px-10 sm:py-4 rounded-xl sm:rounded-2xl flex items-center justify-center gap-2 sm:gap-3 transition-all duration-300 transform active:scale-95"
               >
-                <FaInfoCircle className="text-[10px] sm:text-sm" /> Details
+                <FaInfoCircle className="text-[8px] sm:text-sm" /> Details
               </Link>
             </div>
           </motion.div>
