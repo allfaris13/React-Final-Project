@@ -29,9 +29,10 @@ const ListNowPlaying = () => {
     }, []);
 
     return (
-        <div className="p-4 container mx-auto">
-            <h2 className={`text-3xl font-bold flex items-center gap-2 mb-6 ${textPrimary}`}>
-                🎞️ Now Playing
+        <div className="p-4 sm:p-6 md:p-8 container mx-auto">
+            <h2 className={`text-2xl sm:text-4xl font-black flex items-center gap-3 mb-6 sm:mb-8 ${textPrimary} tracking-tighter`}>
+                <span className="w-2 h-8 bg-red-600 rounded-full"></span>
+                Now Playing
             </h2>
 
             {loading ? (
@@ -39,12 +40,12 @@ const ListNowPlaying = () => {
                     <span className="loading loading-spinner loading-lg text-red-600"></span>
                 </div>
             ) : (
-                <div className="relative">
-                    <div className={`absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r ${bgColor} to-transparent pointer-events-none z-10`} />
-                    <div className={`absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l ${bgColor} to-transparent pointer-events-none z-10`} />
+                <div className="relative group">
+                    <div className={`absolute left-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-r ${bgColor} to-transparent pointer-events-none z-10 opacity-0 group-hover:opacity-100 transition-opacity`} />
+                    <div className={`absolute right-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-l ${bgColor} to-transparent pointer-events-none z-10 opacity-0 group-hover:opacity-100 transition-opacity`} />
 
-                    <div className="overflow-x-auto scroll-smooth pb-4 px-4 scrollbar-hide">
-                        <div className="carousel w-full space-x-6 pb-4 pt-4">
+                    <div className="overflow-x-auto scroll-smooth pb-4 px-2 sm:px-4 scrollbar-hide">
+                        <div className="carousel w-full gap-4 sm:gap-6 pb-4 pt-4">
                             {nowPlaying.map(movie => (
                                 <MovieCard key={movie.id} item={movie} type="movie" />
                             ))}

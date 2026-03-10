@@ -3,8 +3,8 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import FilmDetailView from "./FilmDetailView";
 import { detailReducer, initialState } from "../../reducer/detailReducer";
-import { useDispatch } from "react-redux";
-import { addFavorite } from "../../reducer/favoriteReducer";
+import { useDispatch, useSelector } from "react-redux";
+import { addFavorite, removeFavorite } from "../../reducer/favoriteReducer";
 import { useTheme } from "../../context/ThemeContext";
 
 const FilmDetail = () => {
@@ -13,6 +13,10 @@ const FilmDetail = () => {
     const reduxDispatch = useDispatch();
     const { theme } = useTheme();
     const { film, trailerKey, cast, similar, loading, error } = state;
+
+    // Check if this film is in favorites
+    const favorites = useSelector(state => state.favorite.films);
+    const isFavorite = favorites.some(f => f.id === parseInt(id));
 
     const API_BASE_URL = "https://api.themoviedb.org/3/movie";
     const API_KEY = import.meta.env.VITE_KEY_TMDB;
@@ -27,20 +31,25 @@ const FilmDetail = () => {
             try {
                 const [detailRes, videosRes, creditsRes, similarRes] = await Promise.all([
                     axios.get(`${API_BASE_URL}/${id}`, { headers: authHeaders }),
-                    axios.get(`${API_BASE_URL}/${id}/videos`, { headers: authHeaders }),
+                    axios.get(`${API_BASE_URL}/${id}/videos`, {
+                        headers: authHeaders,
+                        params: { include_video_language: "en,null" }
+                    }),
                     axios.get(`${API_BASE_URL}/${id}/credits`, { headers: authHeaders }),
                     axios.get(`${API_BASE_URL}/${id}/similar`, { headers: authHeaders }),
                 ]);
 
-                const trailer = videosRes.data.results.find(
-                    (vid) => vid.type === "Trailer" && vid.site === "YouTube"
-                );
+                const videos = videosRes.data.results || [];
+                const bestVideo = videos.filter(v => v.site === "YouTube").find(v => v.type === "Trailer") ||
+                    videos.filter(v => v.site === "YouTube").find(v => v.type === "Teaser") ||
+                    videos.find(v => v.site === "YouTube");
+                const trailerKeyFound = bestVideo ? bestVideo.key : null;
 
                 localDispatch({
                     type: "SUCCESS",
                     payload: {
                         film: detailRes.data,
-                        trailerKey: trailer ? trailer.key : null,
+                        trailerKey: trailerKeyFound,
                         cast: creditsRes.data.cast,
                         similar: similarRes.data.results,
                     },
@@ -57,8 +66,11 @@ const FilmDetail = () => {
 
     const handleFavorite = () => {
         if (film) {
-            reduxDispatch(addFavorite({ ...film, media_type: 'movie' }, "films"));
-            alert(`🎉 ${film.title} ditambahkan ke Favorite!`);
+            if (isFavorite) {
+                reduxDispatch(removeFavorite(film.id, "films"));
+            } else {
+                reduxDispatch(addFavorite({ ...film, media_type: 'movie' }, "films"));
+            }
         }
     };
 
@@ -82,6 +94,7 @@ const FilmDetail = () => {
             similar={similar || []}
             theme={theme}
             handleFavorite={handleFavorite}
+            isFavorite={isFavorite}
         />
     );
 };

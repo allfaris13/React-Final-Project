@@ -11,7 +11,7 @@ import { FaStar, FaPlay, FaGlobe, FaClock, FaHeart, FaCalendarAlt, FaTag, FaIndu
 const IMG_BASE = "https://image.tmdb.org/t/p/original";
 const POSTER_BASE = "https://image.tmdb.org/t/p/w500";
 
-const FilmDetailView = ({ film, trailerKey, cast, similar, theme, handleFavorite }) => {
+const FilmDetailView = ({ film, trailerKey, cast, similar, theme, handleFavorite, isFavorite }) => {
     const navigate = useNavigate();
 
     const themeClass = theme === "dark" ? "bg-gray-900 text-gray-100" : "bg-gray-100 text-gray-900";
@@ -33,13 +33,33 @@ const FilmDetailView = ({ film, trailerKey, cast, similar, theme, handleFavorite
             {/* 1. HERO SECTION */}
             <div className="relative w-full h-[70vh] md:h-[85vh]">
                 <motion.div
-                    initial={{ scale: 1.1, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ duration: 0.8 }}
-                    className="absolute inset-0 bg-cover bg-center"
-                    style={{ backgroundImage: `url(${IMG_BASE}${film.backdrop_path})` }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 1 }}
+                    className="absolute inset-0 overflow-hidden bg-black"
                 >
-                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-black/60"></div>
+                    {/* Base Image Layer - High Quality Fallback */}
+                    <div
+                        className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
+                        style={{ backgroundImage: `url(${IMG_BASE}${film.backdrop_path})` }}
+                    />
+
+                    {/* Video Background Layer - YouTube Integration */}
+                    {trailerKey && (
+                        <div className="absolute inset-0 pointer-events-none">
+                            <iframe
+                                className="absolute top-1/2 left-1/2 w-[115%] h-[115%] -translate-x-1/2 -translate-y-1/2 object-cover scale-[1.8] sm:scale-[1.35]"
+                                src={`https://www.youtube.com/embed/${trailerKey}?autoplay=1&mute=1&loop=1&playlist=${trailerKey}&controls=0&modestbranding=1&showinfo=0&rel=0&iv_load_policy=3&enablejsapi=1&playsinline=1&origin=${window.location.origin}`}
+                                title="Background Trailer"
+                                allow="autoplay; encrypted-media"
+                            />
+                            {/* Subtle dark overlay to blend video with UI */}
+                            <div className="absolute inset-0 bg-black/10"></div>
+                        </div>
+                    )}
+
+                    {/* Cinematic Bottom Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-transparent to-black/10"></div>
                 </motion.div>
 
                 {/* Top Nav Overlay */}
@@ -56,7 +76,7 @@ const FilmDetailView = ({ film, trailerKey, cast, similar, theme, handleFavorite
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                         onClick={handleFavorite}
-                        className="bg-white/10 backdrop-blur-xl border border-white/20 p-4 rounded-2xl text-red-500 hover:bg-red-600 hover:text-white transition-all shadow-2xl"
+                        className={`backdrop-blur-xl border border-white/20 p-4 rounded-2xl transition-all shadow-2xl ${isFavorite ? 'bg-red-600 text-white border-red-500' : 'bg-white/10 text-white hover:bg-red-600'}`}
                     >
                         <FaHeart className="text-xl" />
                     </motion.button>
@@ -74,7 +94,7 @@ const FilmDetailView = ({ film, trailerKey, cast, similar, theme, handleFavorite
                             <img
                                 src={film.poster_path ? `${POSTER_BASE}${film.poster_path}` : "https://via.placeholder.com/500x750?text=No+Poster"}
                                 alt={film.title}
-                                className="w-full rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-4 border-white/10 transform rotate-1"
+                                className="w-full rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-4 border-white/10 transform rotate-3"
                             />
                         </motion.div>
 

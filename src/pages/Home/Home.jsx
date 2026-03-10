@@ -75,16 +75,17 @@ const Home = ({ isMuted, toggleSound }) => {
             `https://api.themoviedb.org/3/movie/${firstTrending.id}/videos`,
             {
               ...apiHeaders,
-              params: { language: "en-US" },
+              params: { include_video_language: "en,null" },
               signal: controller.signal,
             }
           );
 
-          const trailer = videoRes.data?.results?.find(
-            (vid) => vid.type === "Trailer" && vid.site === "YouTube"
-          );
+          const videos = videoRes.data?.results || [];
+          const bestVideo = videos.filter(v => v.site === "YouTube").find(v => v.type === "Trailer") ||
+            videos.filter(v => v.site === "YouTube").find(v => v.type === "Teaser") ||
+            videos.find(v => v.site === "YouTube");
 
-          if (trailer) setTrailerKey(trailer.key);
+          if (bestVideo) setTrailerKey(bestVideo.key);
         }
       } catch (err) {
         if (axios.isCancel(err)) {

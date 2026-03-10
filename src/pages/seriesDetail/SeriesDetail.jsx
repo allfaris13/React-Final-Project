@@ -4,8 +4,8 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { useTheme } from "../../context/ThemeContext";
-import { useDispatch } from "react-redux";
-import { addFavorite } from "../../reducer/favoriteReducer";
+import { useDispatch, useSelector } from "react-redux";
+import { addFavorite, removeFavorite } from "../../reducer/favoriteReducer";
 import SeriesDetailView from "./SeriesDetailView"; // 👈 Import komponen tampilan
 
 const SeriesDetail = () => {
@@ -16,6 +16,10 @@ const SeriesDetail = () => {
   const [cast, setCast] = useState([]);
   const [similar, setSimilar] = useState([]);
   const reduxDispatch = useDispatch();
+
+  // Check if this series is in favorites
+  const favorites = useSelector(state => state.favorite.series);
+  const isFavorite = favorites.some(f => f.id === parseInt(id));
 
   useEffect(() => {
     const fetchSeries = async () => {
@@ -35,11 +39,13 @@ const SeriesDetail = () => {
             accept: "application/json",
             Authorization: "Bearer " + import.meta.env.VITE_KEY_TMDB,
           },
+          params: { include_video_language: "en,null" }
         });
-        const trailer = trailerRes.data.results.find(
-          (vid) => vid.type === "Trailer" && vid.site === "YouTube"
-        );
-        setTrailerKey(trailer ? trailer.key : null);
+        const videos = trailerRes.data.results || [];
+        const bestVideo = videos.filter(v => v.site === "YouTube").find(v => v.type === "Trailer") ||
+          videos.filter(v => v.site === "YouTube").find(v => v.type === "Teaser") ||
+          videos.find(v => v.site === "YouTube");
+        setTrailerKey(bestVideo ? bestVideo.key : null);
 
         // Fetch Cast
         const castRes = await axios.get(`https://api.themoviedb.org/3/tv/${id}/credits`, {
@@ -63,13 +69,16 @@ const SeriesDetail = () => {
       }
     };
 
-    fetchSeries(); 
-  }, [id]); 
+    fetchSeries();
+  }, [id]);
 
   const handleFavorite = () => {
     if (series) {
-      reduxDispatch(addFavorite(series, "series")); 
-      alert(`🎉 ${series.name} ditambahkan ke Favorite!`);
+      if (isFavorite) {
+        reduxDispatch(removeFavorite(series.id, "series"));
+      } else {
+        reduxDispatch(addFavorite(series, "series"));
+      }
     }
   };
 
@@ -80,13 +89,14 @@ const SeriesDetail = () => {
 
   // Meneruskan semua data dan fungsi yang diperlukan ke komponen tampilan
   return (
-    <SeriesDetailView 
+    <SeriesDetailView
       series={series}
       trailerKey={trailerKey}
       cast={cast}
       similar={similar}
       theme={theme}
       handleFavorite={handleFavorite}
+      isFavorite={isFavorite}
     />
   );
 };

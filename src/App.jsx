@@ -1,11 +1,11 @@
 // src/App.jsx 
 
 import React, { useState } from "react";
-import { 
-    Routes, 
-    Route, 
-    Link, 
-    useParams, 
+import {
+    Routes,
+    Route,
+    Link,
+    useParams,
 } from "react-router-dom";
 import { useTheme } from "./context/ThemeContext";
 
@@ -22,114 +22,100 @@ import ListSeries from "./components/List/listSeries/ListSeries";
 import ListTrending from "./components/List/listTrending/ListTrending";
 import ListNowPlaying from "./components/List/listNowPlaying/ListNowPlaying";
 
-// Tambahkan ikon dari react-icons yang hilang (asumsi Anda menggunakan library ini)
-import { FaTwitter, FaInstagram, FaGithub, FaHeart } from 'react-icons/fa'; 
+// Icons
+import { FaTwitter, FaInstagram, FaGithub, FaHeart, FaHome, FaSearch } from 'react-icons/fa';
 
 
 // Komponen untuk mendapatkan tahun saat ini
 const FooterContent = () => {
-    const currentYear = new Date().getFullYear(); 
-    
-    // Pindahkan seluruh markup footer ke komponen ini (opsional tapi disarankan)
+    const currentYear = new Date().getFullYear();
+
     return (
-        <footer className="footer footer-center p-10 bg-base-300 text-base-content border-t-2 border-red-900 shadow-2xl mt-50 w-full  ">
-            
-            {/* === Bagian Logo atau Nama Aplikasi === */}
-            <div className="flex flex-col items-center">
-                <Link to="/" className="text-4xl font-extrabold text-red-900 transition-colors duration-300 hover:text-red-600">
-                    BiosKocak
-                </Link>
-                <p className="text-sm mt-1 text-gray-500">Discover your next favorite movie or series.</p>
+        <footer className="relative mt-20 border-t border-white/5 bg-base-200/50 backdrop-blur-xl pt-16 pb-8 px-6 overflow-hidden">
+            {/* Background Accent */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[1px] bg-gradient-to-r from-transparent via-red-600/50 to-transparent"></div>
+
+            <div className="max-w-7xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
+                    {/* Brand Section */}
+                    <div className="flex flex-col items-center md:items-start space-y-4">
+                        <Link to="/" className="text-3xl font-black tracking-tighter transition-transform hover:scale-105 inline-block">
+                            <span className="text-base-content">Bios</span>
+                            <span className="text-red-600">Kocak</span>
+                        </Link>
+                        <p className="text-sm font-medium opacity-50 text-center md:text-left leading-relaxed max-w-xs">
+                            Experience the magic of cinema. Discover thousands of trending movies and series with premium quality data.
+                        </p>
+                    </div>
+
+                    {/* Navigation Section */}
+                    <div className="flex flex-col items-center space-y-6">
+                        <h4 className="text-xs font-black uppercase tracking-[0.2em] opacity-30">Quick Navigation</h4>
+                        <nav className="flex flex-wrap justify-center gap-x-8 gap-y-4">
+                            <Link to="/about" className="text-sm font-bold hover:text-red-600 transition-colors">About</Link>
+                            <Link to="/privacy" className="text-sm font-bold hover:text-red-600 transition-colors">Privacy</Link>
+                            <Link to="/contact" className="text-sm font-bold hover:text-red-600 transition-colors">Contact</Link>
+                            <Link to="/api-status" className="text-sm font-bold hover:text-red-600 transition-colors">API Status</Link>
+                        </nav>
+                    </div>
+
+                    {/* Social Section */}
+                    <div className="flex flex-col items-center md:items-end space-y-6">
+                        <h4 className="text-xs font-black uppercase tracking-[0.2em] opacity-30">Get Connected</h4>
+                        <div className="flex gap-4">
+                            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center bg-white/5 hover:bg-red-600 rounded-xl transition-all hover:-translate-y-1">
+                                <FaTwitter className="text-lg" />
+                            </a>
+                            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center bg-white/5 hover:bg-red-600 rounded-xl transition-all hover:-translate-y-1">
+                                <FaInstagram className="text-lg" />
+                            </a>
+                            <a href="https://github.com/your-username" target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center bg-white/5 hover:bg-red-600 rounded-xl transition-all hover:-translate-y-1">
+                                <FaGithub className="text-lg" />
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Bottom Bar */}
+                <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6 text-[10px] sm:text-xs">
+                    <div className="flex flex-col items-center md:items-start gap-2">
+                        <p className="font-bold opacity-30">
+                            © {currentYear} BIOSKOCAK. ALL RIGHTS RESERVED.
+                        </p>
+                        <p className="font-medium opacity-20">
+                            DATA PROVIDED BY <a href="https://www.themoviedb.org/" target="_blank" rel="noopener noreferrer" className="hover:text-red-600 transition-colors">THE MOVIE DATABASE</a>.
+                        </p>
+                    </div>
+
+                    <div className="flex items-center gap-2 bg-white/5 px-4 py-2 rounded-full border border-white/5">
+                        <span className="opacity-40 font-bold uppercase tracking-widest text-[9px]">Built with</span>
+                        <FaHeart className="text-red-600 animate-pulse" />
+                        <span className="opacity-40 font-bold uppercase tracking-widest text-[9px]">by BiosKocak Team</span>
+                    </div>
+                </div>
             </div>
-        
-            {/* === Bagian Tautan Navigasi === */}
-            <nav className="grid grid-flow-col gap-8 text-lg font-semibold text-base-content">
-                <Link to="/about" className="link link-hover text-base-content transition-colors duration-300 hover:text-red-600">
-                    About Us
-                </Link>
-                <Link to="/privacy" className="link link-hover text-base-content transition-colors duration-300 hover:text-red-600">
-                    Privacy Policy
-                </Link>
-                <Link to="/contact" className="link link-hover text-base-content transition-colors duration-300 hover:text-red-600">
-                    Contact
-                </Link>
-                <Link to="/api-status" className="link link-hover text-base-content transition-colors duration-300 hover:text-red-600">
-                    API Status
-                </Link>
-            </nav>
-        
-            {/* === Bagian Ikon Media Sosial === */}
-            <div className="grid grid-flow-col gap-6">
-                <a
-                    href="https://twitter.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-2xl text-base-content transition-colors duration-300 hover:text-red-600 hover:scale-110"
-                >
-                    <FaTwitter />
-                </a>
-                <a
-                    href="https://instagram.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-2xl text-base-content transition-colors duration-300 hover:text-red-600 hover:scale-110"
-                >
-                    <FaInstagram />
-                </a>
-                <a
-                    href="https://github.com/your-username"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-2xl text-base-content transition-colors duration-300 hover:text-red-600 hover:scale-110"
-                >
-                    <FaGithub />
-                </a>
-            </div>
-        
-            {/* === Bagian Hak Cipta dan Sumber Data === */}
-            <aside className="text-sm text-gray-500">
-                <p>
-                    Built with <FaHeart className="inline text-red-600 mx-1 animate-pulse" /> by BiosKocak Team.
-                </p>
-                <p className="mt-1">
-                    Copyright © {currentYear} - All right reserved.
-                    Data provided by
-                    <a
-                        href="https://www.themoviedb.org/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-red-600 font-semibold ml-1 link link-hover"
-                    >
-                        The Movie Database (TMDB)
-                    </a>.
-                </p>
-            </aside>
         </footer>
     );
 };
 
 
-// Komponen Wrapper untuk memaksa render ulang FilmDetail ketika ID berubah
+
 const FilmDetailWrapper = () => {
-    const { id } = useParams(); 
-    return <FilmDetail key={id} />; 
+    const { id } = useParams();
+    return <FilmDetail key={id} />;
 };
 
 function App() {
     const { theme } = useTheme();
-    const [isMuted, setIsMuted] = useState(true); 
+    const [isMuted, setIsMuted] = useState(true);
 
     const toggleSound = () => {
         const iframe = document.getElementById("ytPlayer");
-
         if (!iframe) {
-            console.warn("Iframe ytPlayer not found.");
-            setIsMuted(!isMuted); 
+            setIsMuted(!isMuted);
             return;
         }
-
         const funcToCall = isMuted ? "unMute" : "mute";
-
         setTimeout(() => {
             iframe.contentWindow.postMessage(
                 JSON.stringify({
@@ -137,66 +123,58 @@ function App() {
                     func: funcToCall,
                     args: [],
                 }),
-                "*" 
+                "*"
             );
         }, isMuted ? 50 : 0);
-
         setIsMuted(!isMuted);
     };
 
     return (
         <div className="min-h-screen transition-colors duration-300 bg-base-100 text-base-content">
-            
-            {/* HEADER (Sticky di bagian atas) */}
-            <header className="sticky top-0 z-40 p-4 flex justify-between items-center shadow-md bg-base-200 text-base-content">
-                <h1 className="text-2xl font-bold">
-                    <span className={theme === "dark" ? "text-white" : "text-gray-900"}>
-                        Bios
-                    </span>
-                    <span className="text-red-600">Kocak</span>
-                </h1>
 
-                {/* Navigasi Utama */}
-                <nav className="flex gap-3">
-                    <Link to="/" className="btn btn-sm btn-ghost hover:text-red-700">
-                        Home
+            {/* HEADER (Floating over Hero) - Improved Mobile Layout */}
+            <header className="absolute top-0 left-0 right-0 z-[100] px-4 md:px-8 py-6 flex justify-between items-center bg-gradient-to-b from-black/60 to-transparent">
+                <Link to="/" className="text-xl md:text-2xl font-black tracking-tighter hover:scale-105 transition-transform">
+                    <span className="text-white">Bios</span>
+                    <span className="text-red-600">Kocak</span>
+                </Link>
+
+                <nav className="flex items-center gap-2 sm:gap-6 bg-base-200/50 sm:bg-transparent p-1 sm:p-0 rounded-2xl sm:rounded-none">
+                    <Link to="/" className="flex items-center gap-2 px-3 py-2 sm:p-0 text-xs sm:text-base font-bold hover:text-red-600 transition-colors group">
+                        <FaHome className="sm:hidden text-lg" />
+                        <span className="hidden sm:block">Home</span>
+                        <div className="hidden sm:block h-0.5 w-0 bg-red-600 group-hover:w-full transition-all duration-300" />
                     </Link>
-                    <Link to="/favorite" className="btn btn-sm btn-ghost hover:text-red-700">
-                        Favorite
+                    <Link to="/favorite" className="flex items-center gap-2 px-3 py-2 sm:p-0 text-xs sm:text-base font-bold hover:text-red-600 transition-colors group">
+                        <FaHeart className="sm:hidden text-lg" />
+                        <span className="hidden sm:block">Favorite</span>
+                        <div className="hidden sm:block h-0.5 w-0 bg-red-600 group-hover:w-full transition-all duration-300" />
                     </Link>
-                    <Link to="/search" className="btn btn-sm btn-ghost hover:text-red-700">
-                        Search
+                    <Link to="/search" className="flex items-center gap-2 px-3 py-2 sm:p-0 text-xs sm:text-base font-bold hover:text-red-600 transition-colors group">
+                        <FaSearch className="sm:hidden text-lg" />
+                        <span className="hidden sm:block">Search</span>
+                        <div className="hidden sm:block h-0.5 w-0 bg-red-600 group-hover:w-full transition-all duration-300" />
                     </Link>
                 </nav>
 
-                {/* Div Spacer (untuk keseimbangan layout) */}
-                <div className="w-[100px] h-0 md:h-auto md:w-auto"></div>
+                <div className="hidden md:block w-32" />
             </header>
 
-            {/* ROUTES (Konten Utama) */}
             <main>
                 <Routes>
-                    {/* Halaman Utama */}
                     <Route path="/" element={<Home isMuted={isMuted} toggleSound={toggleSound} />} />
-                    
-                    {/* Halaman Detail */}
                     <Route path="/film/:id" element={<FilmDetailWrapper />} />
                     <Route path="/series/:id" element={<SeriesDetail />} />
-                    
-                    {/* Halaman Fungsional */}
                     <Route path="/favorite" element={<Favorite />} />
                     <Route path="/search" element={<Cari />} />
-                    
-                    {/* Halaman Daftar (List) */}
                     <Route path="/movies" element={<ListMovie />} />
                     <Route path="/series" element={<ListSeries />} />
                     <Route path="/trending" element={<ListTrending />} />
                     <Route path="/now-playing" element={<ListNowPlaying />} />
                 </Routes>
             </main>
-            
-            {/* FOOTER (Ditempatkan di sini, di luar <header> dan setelah <main>) */}
-            <FooterContent /> 
+
+            <FooterContent />
         </div>
     );
 }

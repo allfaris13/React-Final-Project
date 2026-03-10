@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import api from "../../../service/api";
 import { useTheme } from "../../../context/ThemeContext";
 import MovieCard from "../../common/MovieCard";
+import { FaChevronLeft, FaChevronRight, FaTv } from "react-icons/fa";
 
 const ListSeries = () => {
     const [series, setSeries] = useState([]);
@@ -41,10 +42,10 @@ const ListSeries = () => {
 
     const getSortLabel = (key) => {
         switch (key) {
-            case "first_air_date.desc": return "Terbaru → Terlama";
-            case "first_air_date.asc": return "Terlama → Terbaru";
-            case "vote_average.desc": return "Rating Tertinggi";
-            case "popularity.desc": return "Paling Populer";
+            case "first_air_date.desc": return "Newest";
+            case "first_air_date.asc": return "Oldest";
+            case "vote_average.desc": return "Top Rated";
+            case "popularity.desc": return "Popular";
             default: return "Sort By";
         }
     }
@@ -55,44 +56,42 @@ const ListSeries = () => {
     };
 
     const sortOptions = [
-        { value: "first_air_date.desc", label: "Terbaru → Terlama" },
-        { value: "first_air_date.asc", label: "Terlama → Terbaru" },
-        { value: "vote_average.desc", label: "Rating Tertinggi" },
-        { value: "popularity.desc", label: "Paling Populer" },
+        { value: "first_air_date.desc", label: "Newest → Oldest" },
+        { value: "first_air_date.asc", label: "Oldest → Newest" },
+        { value: "vote_average.desc", label: "Top Rated" },
+        { value: "popularity.desc", label: "Most Popular" },
     ];
 
     return (
-        <div className="p-4 container mx-auto">
-            <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-                <h2 className={`text-3xl font-bold flex items-center gap-2 ${textPrimary}`}>
-                    📺 List Series
+        <div className="p-4 sm:p-6 md:p-8 container mx-auto">
+            <div className="flex flex-col sm:flex-row items-center justify-between mb-6 sm:mb-8 gap-4">
+                <h2 className={`text-2xl sm:text-4xl font-black flex items-center gap-3 ${textPrimary} tracking-tighter`}>
+                    <span className="w-2 h-8 bg-red-600 rounded-full"></span>
+                    List Series
                 </h2>
 
-                <div className="dropdown dropdown-end">
+                <div className="dropdown dropdown-end w-full sm:w-auto">
                     <div tabIndex={0} role="button" className="
-                        btn btn-sm text-sm border-2 border-red-700 
-                        bg-transparent text-base-content 
-                        hover:bg-red-700 hover:text-white transition duration-300
+                        btn btn-sm sm:btn-md border-2 border-red-700 
+                        bg-transparent text-base-content w-full sm:w-auto
+                        hover:bg-red-700 hover:text-white transition-all duration-300 rounded-xl
                     ">
+                        <FaTv className="mr-2" />
                         {getSortLabel(sortBy)}
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chevron-down" viewBox="0 0 16 16">
-                            <path fillRule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />
-                        </svg>
                     </div>
 
                     <ul tabIndex={0} className="
-                        dropdown-content z-[1] menu p-2 shadow-xl rounded-box w-52 
-                        bg-base-300 text-base-content 
+                        dropdown-content z-[2] menu p-2 shadow-2xl rounded-2xl w-full sm:w-56 
+                        bg-base-300 text-base-content mt-2 border border-white/5
                     ">
                         {sortOptions.map(option => (
-                            <li key={option.value}>
+                            <li key={option.value} className="mb-1">
                                 <a
                                     onClick={() => handleSortChange(option.value)}
-                                    className={
-                                        sortBy === option.value
-                                            ? "active bg-red-700 text-white"
-                                            : "hover:bg-red-700 hover:text-white"
-                                    }
+                                    className={`rounded-xl p-3 font-bold ${sortBy === option.value
+                                            ? "bg-red-700 text-white"
+                                            : "hover:bg-red-700/10 hover:text-red-600"
+                                        }`}
                                 >
                                     {option.label}
                                 </a>
@@ -108,12 +107,12 @@ const ListSeries = () => {
                 </div>
             ) : (
                 <>
-                    <div className="relative">
-                        <div className={`absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r ${bgColor} to-transparent pointer-events-none z-10`} />
-                        <div className={`absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l ${bgColor} to-transparent pointer-events-none z-10`} />
+                    <div className="relative group">
+                        <div className={`absolute left-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-r ${bgColor} to-transparent pointer-events-none z-10 opacity-0 group-hover:opacity-100 transition-opacity`} />
+                        <div className={`absolute right-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-l ${bgColor} to-transparent pointer-events-none z-10 opacity-0 group-hover:opacity-100 transition-opacity`} />
 
-                        <div className="overflow-x-auto scroll-smooth pb-4 px-4 scrollbar-hide">
-                            <div className="carousel w-full space-x-6 pb-4 pt-4">
+                        <div className="overflow-x-auto scroll-smooth pb-6 px-2 sm:px-4 scrollbar-hide">
+                            <div className="carousel w-full gap-4 sm:gap-6 pb-4 pt-4">
                                 {series.map(serie => (
                                     <MovieCard key={serie.id} item={serie} type="series" />
                                 ))}
@@ -121,23 +120,23 @@ const ListSeries = () => {
                         </div>
                     </div>
 
-                    <div className="flex justify-center mt-6 gap-2">
+                    <div className="flex justify-center items-center mt-8 gap-4">
                         <button
                             disabled={page === 1 || loading}
                             onClick={() => setPage((p) => p - 1)}
-                            className={`px-3 py-1 ${btnClass} rounded disabled:opacity-50 hover:bg-red-800 transition`}
+                            className={`p-3 ${btnClass} rounded-xl disabled:opacity-20 hover:bg-black transition-all shadow-lg active:scale-90`}
                         >
-                            Prev
+                            <FaChevronLeft />
                         </button>
-                        <span className={`font-bold flex items-center ${textPrimary}`}>
-                            {page} / {totalPages}
+                        <span className={`font-black text-lg ${textPrimary} bg-base-300 px-6 py-2 rounded-xl border border-white/5`}>
+                            {page} <span className="opacity-30 mx-2">/</span> {totalPages}
                         </span>
                         <button
                             disabled={page === totalPages || loading}
                             onClick={() => setPage((p) => p + 1)}
-                            className={`px-3 py-1 ${btnClass} rounded disabled:opacity-50 hover:bg-red-800 transition`}
+                            className={`p-3 ${btnClass} rounded-xl disabled:opacity-20 hover:bg-black transition-all shadow-lg active:scale-90`}
                         >
-                            Next
+                            <FaChevronRight />
                         </button>
                     </div>
                 </>
